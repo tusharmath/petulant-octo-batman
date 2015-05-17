@@ -6,6 +6,8 @@
     "bragi": "0.0.23",
     "express": "^5.0.0-alpha.1",
     "lodash": "^3.8.0",
+    "mongoose": "^4.0.3",
+    "mongoose-q": "0.0.17",
     "require-directory": "^2.1.0"
   }
 }
