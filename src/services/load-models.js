@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var models = require('../models');
 var Models = {};
-var attachVirtual = function (schema, desc) {
+var attachVirtual = function (desc, schema) {
     _.each(desc.virtuals, function (virtualProperty, virtualName) {
         if (virtualProperty.get) {
             schema.virtual(virtualName).get(virtualProperty.get);
@@ -15,11 +15,19 @@ var attachVirtual = function (schema, desc) {
         }
     });
 };
+
+var attachValidators = function (desc, schema) {
+    _.each(desc.validators, function (validatorFunc, validatorName) {
+        schema.path(validatorName).validate(validatorFunc);
+    });
+};
+
 function createModel(desc, name) {
     var schema = new Schema(desc.schema, desc.options);
     _.assign(schema.methods, desc.methods);
     _.assign(schema.statics, desc.statics);
-    attachVirtual(schema, desc);
+    attachVirtual(desc, schema);
+    attachValidators(desc, schema);
     Models[name] = connection.model(name, schema);
 }
 _.each(models, createModel);

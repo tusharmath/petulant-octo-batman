@@ -17,12 +17,13 @@ global.$$ = function (err, res) {
     }
     var varName = 'res' + index++;
     global[varName] = res;
-    bragi.log('repl', `${bragi.util.print(varName, 'green')}:\n ${res}`);
+    var message = bragi.util.print(varName, 'green');
+    bragi.log('repl', `\nOutput:\n${message}:= ${res}`);
 };
 _.assign(global, models);
 
 repl.start({
-    prompt: `${config.appName}: `,
+    prompt: `${config.appName.toUpperCase()}: `,
     input: process.stdin,
     output: process.stdout,
     useColors: true,
