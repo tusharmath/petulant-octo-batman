@@ -1,4 +1,11 @@
 {
   "name": "application-name",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "bragi": "0.0.23",
+    "express": "^5.0.0-alpha.1",
+    "lodash": "^3.8.0",
+    "require-directory": "^2.1.0"
+  }
 }
