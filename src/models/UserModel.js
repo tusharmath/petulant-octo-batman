@@ -32,7 +32,7 @@ exports.schema = {
 exports.methods = {};
 exports.validators = {
     permissions: function (permissions){
-        return _.diff(permissions, PERMISSIONS).length === 0;
+        return _.difference(permissions, PERMISSIONS).length === 0;
     }
 };
 exports.statics = {

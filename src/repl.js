@@ -13,7 +13,7 @@ var index = 0;
 global.lo = _;
 global.$$ = function (err, res) {
     if (err) {
-        return bragi.error(err);
+        return bragi.log('error', err);
     }
     var varName = 'res' + index++;
     global[varName] = res;

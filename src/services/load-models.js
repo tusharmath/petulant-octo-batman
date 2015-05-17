@@ -18,7 +18,7 @@ var attachVirtual = function (desc, schema) {
 
 var attachValidators = function (desc, schema) {
     _.each(desc.validators, function (validatorFunc, validatorName) {
-        schema.path(validatorName).validate(validatorFunc);
+        schema.path(validatorName).validate(validatorFunc, `Invalid ${validatorName}`);
     });
 };
 
