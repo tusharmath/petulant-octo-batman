@@ -1,7 +1,7 @@
 "use strict";
 var _ = require('lodash');
 var connection = require('../connections/mongo');
-var mongoose = require('mongoose');
+var mongoose = require('mongoose-q')();
 var Schema = mongoose.Schema;
 var models = require('../models');
 var Models = {};
@@ -28,7 +28,7 @@ var addCreatedByToSchema = function (desc) {
             type: Schema.Types.ObjectId,
             ref: 'UserModel',
             required: true
-        }
+        };
     }
 };
 function createModel(desc, name) {
