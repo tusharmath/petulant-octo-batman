@@ -6,6 +6,7 @@ path = require('path');
 rootPath = path.normalize(__dirname + '/../../..');
 
 module.exports = {
+    maxDispatchDataSize: 1024 * 10,
     mailgun: {
         login: 'postmaster@meanads.com',
         domain: 'meanads.com',

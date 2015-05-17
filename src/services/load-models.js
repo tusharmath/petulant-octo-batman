@@ -22,7 +22,18 @@ var attachValidators = function (desc, schema) {
     });
 };
 
+var addCreatedByToSchema = function (desc) {
+    if (desc.options && desc.options.createdBy) {
+        desc.schema.createdBy = {
+            type: Schema.Types.ObjectId,
+            ref: 'UserModel',
+            required: true
+        }
+    }
+};
 function createModel(desc, name) {
+    //Options required by mongoose
+    addCreatedByToSchema(desc);
     var schema = new Schema(desc.schema, desc.options);
     _.assign(schema.methods, desc.methods);
     _.assign(schema.statics, desc.statics);
