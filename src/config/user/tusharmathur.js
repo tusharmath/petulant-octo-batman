@@ -5,7 +5,7 @@ module.exports = {
     uri: 'tcp://localhost:6379'
   },
   mongo: {
-    uri: 'mongodb://localhost:27017/adwords'
+    uri: 'mongodb://localhost:27017/hack'
   },
   bragi: {
     options: {
