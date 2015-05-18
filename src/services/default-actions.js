@@ -5,16 +5,24 @@
 var _ = require('lodash');
 module.exports = function (model) {
     return {
-        create: function (req) {
-            return model.create(req.query);
+
+        /**
+         * @param obj
+         */
+        create: function (req, obj) {
+            return model.create(obj);
         },
         remove: function (req) {
             return model.findOneAndRemove({_id: req.params.id});
         },
-        update: function (req) {
+
+        /**
+         * @param obj
+         */
+        update: function (req, obj) {
             return model.findOne({_id: req.params.id})
                 .then(function (doc) {
-                    _.assign(doc, req.query);
+                    _.assign(doc, obj);
                     return doc.save();
                 });
         },

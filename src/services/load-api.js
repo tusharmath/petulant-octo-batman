@@ -7,6 +7,7 @@ var bragi = require('bragi');
 var express = require('express');
 var controllers = require('../controllers');
 var createDefaultActions = require('./default-actions');
+var config = require('../config');
 var models = require('./load-models');
 
 var getModel = function (collectionName) {
@@ -17,8 +18,15 @@ var getCollectionName = function (ctrlName) {
     return ctrlName.replace('Controller', '');
 };
 
-var defaultHandler = function (action, req, res) {
-    action(req).then(function (val) {
+/**
+ * @param {String("body")|String("query")} bodySource
+ */
+var getRequestBody = function (bodySource, req) {
+    bodySource = bodySource || 'body';
+    return req[bodySource];
+};
+var defaultHandler = function (bodySource, action, req, res) {
+    action(req, getRequestBody(bodySource, req)).then(function (val) {
         res.send(val);
     }, function (err) {
         var unknownErr;
@@ -32,14 +40,21 @@ var defaultHandler = function (action, req, res) {
 
 var getRoute = function (ctrlName, actionName) {
     ctrlName = ctrlName.toLowerCase();
-    var GET = 'get';
-    return {
-        'create': {url: `/create/${ctrlName}`, method: GET},
-        'update': {url: `/update/${ctrlName}/:id`, method: GET},
-        'find': {url: `/${ctrlName}s`, method: GET},
-        'remove': {url: `/remove/${ctrlName}/:id`, method: GET},
-        'one': {url: `/${ctrlName}/:id`, method: GET}
-    }[actionName];
+    var GET = 'get', POST = 'post', DELETE = 'delete', PATCH = 'patch';
+    var routes = {
+        'create': [{url: `/${ctrlName}`, method: POST}],
+        'update': [{url: `/${ctrlName}/:id`, method: PATCH}],
+        'remove': [{url: `/${ctrlName}/:id`, method: DELETE}],
+        'find': [{url: `/${ctrlName}s`, method: GET}],
+        'one': [{url: `/${ctrlName}/:id`, method: GET}]
+    };
+    //Helpful urls for dev env
+    if (config.env === 'development') {
+        routes.create.push({url: `/${ctrlName}/create`, method: GET, bodySource: 'query'});
+        routes.update.push({url: `/${ctrlName}/update/:id`, method: GET, bodySource: 'query'});
+        routes.remove.push({url: `/${ctrlName}/remove/:id`, method: GET, bodySource: 'query'});
+    }
+    return routes[actionName];
 };
 var router = new express.Router();
 _.each(controllers, function (ctrl, ctrlName) {
@@ -50,8 +65,10 @@ _.each(controllers, function (ctrl, ctrlName) {
     _.assign(actions, ctrl.actions);
 
     _.each(actions, function (action, actionName) {
-        var route = getRoute(collectionName, actionName);
-        router[route.method](route.url, _.partial(defaultHandler, action));
+        var routes = getRoute(collectionName, actionName);
+        _.each(routes, function (route) {
+            router[route.method](route.url, _.partial(defaultHandler, route.bodySource, action));
+        });
     });
 });
 module.exports = router;
