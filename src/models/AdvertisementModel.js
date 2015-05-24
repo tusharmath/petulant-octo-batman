@@ -1,6 +1,8 @@
 /**
  * Created by tusharmathur on 5/17/15.
+ * Enables advertisers to market their product
  */
+
 
 "use strict";
 var _ = require('lodash');
@@ -10,9 +12,9 @@ exports.options = {
     createdBy: true
 };
 exports.schema = {
-    campaign: {
+    domain: {
         type: Schema.Types.ObjectId,
-        ref: 'CampaignModel',
+        ref: 'DomainModel',
         required: true
     },
     dispatchData: {
@@ -23,6 +25,7 @@ exports.schema = {
         required: true
     },
     keywords: {
+        //Selected from the list of keywords available in the Domain
         type: [String],
         required: true
     }
