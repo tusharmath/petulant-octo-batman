@@ -12,9 +12,9 @@ exports.options = {
     createdBy: true
 };
 exports.schema = {
-    domain: {
+    campaign: {
         type: Schema.Types.ObjectId,
-        ref: 'DomainModel',
+        ref: 'CampaignModel',
         required: true
     },
     dispatchData: {

@@ -50,9 +50,9 @@ var getRoute = function (ctrlName, actionName) {
     };
     //Helpful urls for dev env
     if (config.env === 'development') {
-        routes.create.push({url: `/${ctrlName}/create`, method: GET, bodySource: 'query'});
-        routes.update.push({url: `/${ctrlName}/update/:id`, method: GET, bodySource: 'query'});
-        routes.remove.push({url: `/${ctrlName}/remove/:id`, method: GET, bodySource: 'query'});
+        routes.create.push({url: `/create/${ctrlName}`, method: GET, bodySource: 'query'});
+        routes.update.push({url: `/update/${ctrlName}/:id`, method: GET, bodySource: 'query'});
+        routes.remove.push({url: `/remove/${ctrlName}/:id`, method: GET, bodySource: 'query'});
     }
     return routes[actionName];
 };
