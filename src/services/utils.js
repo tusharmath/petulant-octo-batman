@@ -5,10 +5,4 @@
 
 var u = {}, _ = require('lodash');
 
-u.executeAll = _.restParam(function (funcCollection, args) {
-    return _.map(funcCollection, function (func) {
-        return func.apply(null, args);
-    });
-});
-
 module.exports = u;

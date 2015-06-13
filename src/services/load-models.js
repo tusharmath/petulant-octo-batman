@@ -8,12 +8,11 @@ var _ = require('lodash'),
     Models = {};
 var attachVirtual = function (desc, schema) {
     _.each(desc.virtuals, function (virtualProperty, virtualName) {
-        if (virtualProperty.get) {
-            schema.virtual(virtualName).get(virtualProperty.get);
-        }
-        if (virtualProperty.set) {
-            schema.virtual(virtualName).set(virtualProperty.set);
-        }
+        _.each(['get', 'set', function (property) {
+            if (virtualProperty[property]) {
+                schema.virtual(virtualName)[property](virtualProperty[property]);
+            }
+        }]);
     });
 };
 
@@ -49,8 +48,8 @@ function createModel(desc, name) {
         attachStatics,
         attachVirtual,
         attachValidators];
-
-    u.executeAll(SCHEMA_MUTATES, desc, schema);
+    _.invoke(SCHEMA_MUTATES, _.callback, null, desc, schema);
+    //u.functionMap(SCHEMA_MUTATES, desc, schema);
     Models[name] = connection.model(name, schema);
 }
 _.each(models, createModel);
