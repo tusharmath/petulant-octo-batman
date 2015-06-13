@@ -1,10 +1,11 @@
 "use strict";
-var _ = require('lodash');
-var connection = require('../connections/mongo');
-var mongoose = require('mongoose-q')();
-var Schema = mongoose.Schema;
-var models = require('../models');
-var Models = {};
+var _ = require('lodash'),
+    u = require('./utils'),
+    connection = require('../connections/mongo'),
+    mongoose = require('mongoose-q')(),
+    Schema = mongoose.Schema,
+    models = require('../models'),
+    Models = {};
 var attachVirtual = function (desc, schema) {
     _.each(desc.virtuals, function (virtualProperty, virtualName) {
         if (virtualProperty.get) {
@@ -31,14 +32,25 @@ var addCreatedByToSchema = function (desc) {
         };
     }
 };
+var attachMethods = function (desc, schema) {
+    _.assign(schema.methods, desc.methods);
+};
+var attachStatics = function (desc, schema) {
+    _.assign(schema.statics, desc.statics);
+};
+
 function createModel(desc, name) {
     //Options required by mongoose
     addCreatedByToSchema(desc);
     var schema = new Schema(desc.schema, desc.options);
-    _.assign(schema.methods, desc.methods);
-    _.assign(schema.statics, desc.statics);
-    attachVirtual(desc, schema);
-    attachValidators(desc, schema);
+
+    var SCHEMA_MUTATES = [
+        attachMethods,
+        attachStatics,
+        attachVirtual,
+        attachValidators];
+
+    u.executeAll(SCHEMA_MUTATES, desc, schema);
     Models[name] = connection.model(name, schema);
 }
 _.each(models, createModel);

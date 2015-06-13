@@ -25,7 +25,6 @@ exports.schema = {
         required: true
     },
     keywords: {
-        //Selected from the list of keywords available in the Domain
         type: [String],
         required: true
     }
