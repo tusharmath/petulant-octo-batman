@@ -6,20 +6,22 @@ var _ = require('lodash'),
     Schema = mongoose.Schema,
     models = require('../models'),
     Models = {};
-var attachVirtual = function (desc, schema) {
-    _.each(desc.virtuals, function (virtualProperty, virtualName) {
-        _.each(['get', 'set', function (property) {
-            if (virtualProperty[property]) {
-                schema.virtual(virtualName)[property](virtualProperty[property]);
-            }
-        }]);
+
+var propertyAttacher = _.curry(function (propertyType, attacher, desc, schema) {
+    _.each(desc[propertyType], _.partial(attacher, schema));
+});
+
+var virtualPropertyAttacher = function (schema, virtualProperty, virtualName) {
+    _.each(['get', 'set'], function (property) {
+        var virtualProperty = virtualProperty[property];
+        if (virtualProperty) {
+            schema.virtual(virtualName)[property](virtualProperty);
+        }
     });
 };
 
-var attachValidators = function (desc, schema) {
-    _.each(desc.validators, function (validatorFunc, validatorName) {
-        schema.path(validatorName).validate(validatorFunc, `Invalid ${validatorName}`);
-    });
+var validatorAttacher = function (schema, validatorFunc, validatorName) {
+    schema.path(validatorName).validate(validatorFunc, `Invalid ${validatorName}`);
 };
 
 var addCreatedByToSchema = function (desc) {
@@ -46,10 +48,10 @@ function createModel(desc, name) {
     var SCHEMA_MUTATES = [
         attachMethods,
         attachStatics,
-        attachVirtual,
-        attachValidators];
-    _.invoke(SCHEMA_MUTATES, _.callback, null, desc, schema);
-    //u.functionMap(SCHEMA_MUTATES, desc, schema);
+        propertyAttacher('virtual', virtualPropertyAttacher),
+        propertyAttacher('validator', validatorAttacher)
+    ];
+    _.invoke(SCHEMA_MUTATES, _.call, null, desc, schema);
     Models[name] = connection.model(name, schema);
 }
 _.each(models, createModel);
